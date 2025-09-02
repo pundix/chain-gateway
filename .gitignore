@@ -1,0 +1,8 @@
+**/build
+**/node_modules
+**/.wrangler
+.vscode
+.sst
+.env
+secret_key
+test

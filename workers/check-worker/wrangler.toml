@@ -1,0 +1,24 @@
+name = "chain-gateway-check-worker"
+main = "./build/worker.mjs"
+compatibility_date = "2022-05-13"
+compatibility_flags = [
+    "streams_enable_constructors"
+]
+# workers_dev = false
+
+[[d1_databases]]
+binding = "DB"
+database_name = "chain-gateway"
+database_id = ""
+
+# [triggers]
+# crons = ["* * * * *"]
+
+[[queues.consumers]]
+queue = "gateway-checker"
+max_batch_size = 1
+max_batch_timeout = 60
+max_retries = 1
+
+[build]
+command = "make build"
