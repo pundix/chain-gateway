@@ -1,8 +1,5 @@
-**/build
-**/node_modules
-**/.wrangler
 .vscode
-.sst
+pb_data/*
+__debug_bin*
 .env
-secret_key
-test
+.env.*
