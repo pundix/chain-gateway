@@ -43,16 +43,26 @@ func (c *ConfigCol) Apply(app core.App, cli *client.ChainGatewayClient) {
 			return err
 		}
 
-		upstreamChangeWebhooks := core.NewRecord(e.Collection)
-		upstreamChangeWebhooks.Set("key", "upstream_change_webhooks")
-		upstreamChangeWebhooks.Set("value", "[]")
-		upstreamChangeWebhooks.Set("module", "upstream")
-		if err := e.App.Save(upstreamChangeWebhooks); err != nil {
+		cloudflareWorkerConfig := CloudflareWorkerConfig{
+			Push: false,
+		}
+		bytes, _ = json.Marshal(cloudflareWorkerConfig)
+		cloudflareWorker := core.NewRecord(e.Collection)
+		cloudflareWorker.Set("key", "cloudflare_worker")
+		cloudflareWorker.Set("value", string(bytes))
+		cloudflareWorker.Set("module", "upstream")
+		if err := e.App.Save(cloudflareWorker); err != nil {
 			return err
 		}
+
+		healthCheckConfig := HealthCheckConfig{
+			Grpc:    false,
+			Jsonrpc: false,
+		}
+		bytes, _ = json.Marshal(healthCheckConfig)
 		healthCheck := core.NewRecord(e.Collection)
 		healthCheck.Set("key", "health_check")
-		healthCheck.Set("value", "{\"grpc\": false, \"jsonrpc\": false}")
+		healthCheck.Set("value", string(bytes))
 		healthCheck.Set("module", "upstream")
 		if err := e.App.Save(healthCheck); err != nil {
 			return err

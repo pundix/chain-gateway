@@ -25,7 +25,7 @@ func main() {
 		Automigrate: true,
 	})
 
-	app.OnServe().BindFunc(func(e *core.ServeEvent) error {
+	app.OnBootstrap().BindFunc(func(e *core.BootstrapEvent) error {
 		rootPath := os.Getenv("GATEWAY_API_URL")
 		user := os.Getenv("GATEWAY_USER")
 		password := os.Getenv("GATEWAY_PASSWORD")
