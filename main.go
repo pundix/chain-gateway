@@ -9,6 +9,7 @@ import (
 	"github.com/pocketbase/pocketbase"
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/pocketbase/pocketbase/plugins/migratecmd"
+	"github.com/pundix/chain-gateway/cmd"
 	collection "github.com/pundix/chain-gateway/internal"
 	"github.com/pundix/chain-gateway/internal/client"
 	"github.com/pundix/chain-gateway/internal/config"
@@ -30,28 +31,32 @@ func main() {
 		user := os.Getenv("GATEWAY_USER")
 		password := os.Getenv("GATEWAY_PASSWORD")
 
-		chainGatewayCli, err := client.NewChainGatewayClient(
-			user,
-			password,
-			rootPath,
-			&http.Client{
-				Timeout: time.Second * 10,
-			},
-		)
-		if err != nil {
-			return err
+		if rootPath != "" {
+			chainGatewayCli, err := client.NewChainGatewayClient(
+				user,
+				password,
+				rootPath,
+				&http.Client{
+					Timeout: time.Second * 10,
+				},
+			)
+			if err != nil {
+				return err
+			}
+			collections := []collection.Collection{
+				secretkey.Me(),
+				upstream.Me(),
+				config.Me(),
+			}
+			for _, col := range collections {
+				col.Apply(e.App, chainGatewayCli)
+			}
 		}
-		collections := []collection.Collection{
-			secretkey.Me(),
-			upstream.Me(),
-			config.Me(),
-		}
-		for _, col := range collections {
-			col.Apply(e.App, chainGatewayCli)
-		}
+
 		return e.Next()
 	})
 
+	app.RootCmd.AddCommand(cmd.NewProxyCommand())
 	if err := app.Start(); err != nil {
 		log.Fatal(err)
 	}
