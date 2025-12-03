@@ -6,20 +6,33 @@
 go build -o cg .
 ```
 
-Launch the dashboard.
+Start the dashboard:
 ```bash
 cg serve --http=127.0.0.1:8090
 ```
-You can use dashboard to add some chain nodes and health check rules.
+Use the dashboard to add chain nodes and health-check rules.
 
-Launch the grpc proxy.
+Start the gRPC proxy:
 ```bash
 cg proxy --api=http://localhost:8090 --duration=1m
 ```
-Grpc proxy is available at `localhost:50051`.
-Grpc proxy will refresh the health node from the dashboard every 1 minute.
+The gRPC proxy is available at localhost:50051.
+It refreshes the list of healthy nodes from the dashboard every minute.
 
-Tron Testnet grpc demo.
+Tron Testnet gRPC demo:
 ```bash
 grpcurl --proto ./api/api.proto --plaintext -H 'chainId:3448148188' -H 'accessKey:$ACCESS_KEY' localhost:50051 protocol.Wallet/GetChainParameters
+```
+Initialize Cloudflare D1:
+> Make sure sqlc is installed.
+```bash
+chmod +x ./cloudflare/init_db.sh
+./cloudflare/init_db.sh
+```
+
+Copy the Cloudflare D1 database ID into the workers JSONC configuration.
+Deploy the Cloudflare Workers:
+```bash
+chmod +x ./cloudflare/deploy_workers.sh
+./cloudflare/deploy_workers.sh
 ```
